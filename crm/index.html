@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexCorp CMS | Admin Panel</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-panel: #111625;
+            --primary: #00f2ff;
+            --primary-hover: #00c8d4;
+            --danger: #ff4757;
+            --text-main: #ffffff;
+            --text-muted: #a0aec0;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.03);
+            --radius: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --font-main: 'Space Grotesk', sans-serif;
+            --font-head: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* LAYOUT GRID */
+        body {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        #dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            z-index: 1000;
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .brand {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .admin-layout {
+            display: flex;
+            margin-top: 70px;
+            /* Offset header */
+            min-height: calc(100vh - 70px);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: #0d121f;
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            left: 0;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.2rem;
+            color: var(--text-muted);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            padding: 3rem;
+            width: calc(100% - 260px);
+            padding-bottom: 120px;
+            /* Space for footer bar */
+        }
+
+        /* TAB LOGIC */
+        .section-group {
+            display: none;
+            /* Hidden by default */
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section-group.active {
+            display: block;
+            /* Show active */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* SECTIONS */
+        .section-group {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h2 {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        /* FORMS */
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* CARDS */
+        .cms-card {
+            background: #171d2d;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .cms-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .cms-card h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-family: var(--font-head);
+        }
+
+        .array-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            background: var(--glass);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        /* BUTTONS */
+        button {
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-head);
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-small {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn-small:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-remove {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+        }
+
+        .btn-remove:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        /* SAVE BAR */
+        .save-bar {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(17, 22, 37, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            display: flex;
+            gap: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .view-site-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .view-site-link:hover {
+            color: var(--primary);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .array-item {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .save-bar {
+                width: 90%;
+                justify-content: space-between;
+                border-radius: 12px;
+            }
+        }
+
+        /* LOGIN SCREEN - Keep original styles for safety */
+        #login-screen {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a233a 0%, var(--bg-dark) 100%);
+        }
+
+        .login-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color:white; margin-bottom: 2rem;">NexCorp CMS</h2>
+            <input type="email" id="email" placeholder="Email" value="admin@nexcorp.com">
+            <input type="password" id="password" placeholder="Password">
+            <button id="loginBtn">Access Dashboard</button>
+            <p id="errorMsg" style="color: red; display: none; margin-top: 1rem;">Invalid Credentials</p>
+        </div>
+    </div>
+
+    <div id="dashboard">
+        <!-- FIXED HEADER -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="brand">NEXCORP <span>CMS</span></div>
+            </div>
+            <a href="/" target="_blank" class="view-site-link">View Live Site ↗</a>
+        </header>
+
+        <div class="admin-layout">
+            <!-- SIDEBAR NAV -->
+            <aside class="sidebar">
+                <div class="nav-item active" onclick="switchTab(this, 'section-global')">Global Settings</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-hero')">Hero Section</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-stats')">Statistics</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-services')">Services</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-production')">Production</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-projects')">Projects</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-why')">Why Choose Us</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-testimonials')">Testimonials</div>
+                <div class="nav-item" onclick="switchTab(this, 'section-contact')">Contact Info</div>
+            </aside>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="main-content">
+                <form id="cmsForm">
+                    <!-- Global Settings -->
+                    <div id="section-global" class="section-group active">
+                        <div class="section-header">
+                            <h2>Global Settings</h2>
+                        </div>
+                        <label>Website Title (Browser Tab)</label>
+                        <input type="text" name="global.siteTitle">
+                        <label>Brand Name (Alt Text / Fallback)</label>
+                        <input type="text" name="global.brandName">
+                        <label>Logo Image URL (Leave empty for Text Logo)</label>
+                        <input type="text" name="global.logoUrl" placeholder="https://example.com/logo.png">
+                        <label>Favicon URL (Browser Tab Icon)</label>
+                        <input type="text" name="global.faviconUrl" placeholder="https://example.com/favicon.ico">
+                    </div>
+
+                    <!-- Hero Section -->
+                    <div id="section-hero" class="section-group">
+                        <div class="section-header">
+                            <h2>Hero Section</h2>
+                        </div>
+                        <label>Main Title (Can use &lt;br&gt;)</label>
+                        <textarea name="hero.title"></textarea>
+                        <label>Subtitle</label>
+                        <textarea name="hero.subtitle"></textarea>
+                        <label>Button 1 Text</label>
+                        <input type="text" name="hero.btnPrimary">
+                        <label>Button 2 Text</label>
+                        <input type="text" name="hero.btnSecondary">
+                    </div>
+
+                    <!-- Stats Section -->
+                    <div id="section-stats" class="section-group">
+                        <div class="section-header">
+                            <h2>Statistics</h2>
+                        </div>
+                        <div id="stats-container"></div>
+                    </div>
+
+                    <!-- Services -->
+                    <div id="section-services" class="section-group">
+                        <div class="section-header">
+                            <h2>Services</h2>
+                            <button type="button" id="addServiceBtn" class="btn-small">+ Add New</button>
+                        </div>
+                        <div id="services-container"></div>
+                    </div>
+
+                    <!-- Production -->
+                    <div id="section-production" class="section-group">
+                        <div class="section-header">
+                            <h2>Production Showcase</h2>
+                        </div>
+                        <label>Title</label>
+                        <input type="text" name="production.title">
+                        <label>Subtitle</label>
+                        <textarea name="production.subtitle"></textarea>
+                    </div>
+
+                    <!-- Projects -->
+                    <div id="section-projects" class="section-group">
+                        <div class="section-header">
+                            <h2>Projects</h2>
+                            <button type="button" id="addProjectBtn" class="btn-small">+ Add New</button>
+                        </div>
+                        <div id="projects-container"></div>
+                    </div>
+
+                    <!-- Why Choose Us -->
+                    <div id="section-why" class="section-group">
+                        <div class="section-header">
+                            <h2>Why Choose Us</h2>
+                            <button type="button" id="addWhyBtn" class="btn-small">+ Add Item</button>
+                        </div>
+                        <label>Section Title</label>
+                        <input type="text" name="whyChooseTitle">
+                        <div id="why-container"></div>
+                    </div>
+
+                    <!-- Testimonials -->
+                    <div id="section-testimonials" class="section-group">
+                        <div class="section-header">
+                            <h2>Testimonials</h2>
+                            <button type="button" id="addTestimonialBtn" class="btn-small">+ Add Testimonial</button>
+                        </div>
+                        <div id="testimonials-container"></div>
+                    </div>
+
+                    <!-- Contact/CTA -->
+                    <div id="section-contact" class="section-group">
+                        <div class="section-header">
+                            <h2>Contact / CTA</h2>
+                        </div>
+                        <label>CTA Title</label>
+                        <textarea name="contact.title"></textarea>
+                        <label>CTA Subtitle</label>
+                        <input type="text" name="contact.subtitle">
+                    </div>
+                </form>
+            </main>
+        </div>
+
+        <div class="save-bar">
+            <button class="btn-logout" id="logoutBtn">Log Out</button>
+            <button class="btn-primary" id="saveBtn">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- TAB SWITCHING SCRIPT -->
+    <script>
+        function switchTab(el, targetId) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            // Add active class to clicked item
+            el.classList.add('active');
+
+            // Hide all sections
+            document.querySelectorAll('.section-group').forEach(section => section.classList.remove('active'));
+            // Show target section
+            const target = document.getElementById(targetId);
+            if (target) target.classList.add('active');
+        }
+    </script>
+
+    <script type="module" src="../src/js/cms/admin.js"></script>
+</body>
+
+</html>
