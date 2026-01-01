@@ -603,27 +603,32 @@
             <p class="form-subtitle">Fill out the details below to start your transformation.</p>
           </div>
 
-          <form class="glass-form">
+          <form class="glass-form" action="https://api.web3forms.com/submit" method="POST" id="mainContactForm">
+            <!-- Replace "YOUR_ACCESS_KEY_HERE" with the key you get from web3forms.com -->
+            <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+            <input type="hidden" name="subject" value="New Contact from NexCorp Website">
+            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
             <div class="form-row">
               <div class="input-group">
-                <input type="text" placeholder="Your Name" required>
+                <input type="text" name="name" placeholder="Your Name" required>
               </div>
               <div class="input-group">
-                <input type="text" placeholder="Company Name" required>
+                <input type="text" name="company" placeholder="Company Name" required>
               </div>
             </div>
 
             <div class="form-row">
               <div class="input-group">
-                <input type="tel" placeholder="Phone Number" required>
+                <input type="tel" name="phone" placeholder="Phone Number" required>
               </div>
               <div class="input-group">
-                <input type="email" placeholder="Email Address" required>
+                <input type="email" name="email" placeholder="Email Address" required>
               </div>
             </div>
 
             <div class="input-group full-width">
-              <select required>
+              <select name="service" required>
                 <option value="" disabled selected>Select Service Type</option>
                 <option value="branding">Brand Identity</option>
                 <option value="digital">Digital Strategy</option>
@@ -636,11 +641,11 @@
               <label for="file-upload" class="custom-file-upload">
                 <span class="upload-icon">📎</span> Upload Reference File (Optional)
               </label>
-              <input id="file-upload" type="file" />
+              <input id="file-upload" name="file" type="file" />
             </div>
 
             <div class="input-group full-width">
-              <textarea placeholder="Tell us about your project..." rows="4" required></textarea>
+              <textarea name="message" placeholder="Tell us about your project..." rows="4" required></textarea>
             </div>
 
             <button type="submit" class="btn-primary pulse-btn">Activate Your Brand</button>

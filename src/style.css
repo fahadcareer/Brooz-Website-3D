@@ -1910,15 +1910,20 @@ input[type="file"] {
   transform: translate(-50%, -50%);
   /* Centered on JS coordinates */
   mix-blend-mode: difference;
-  display: none;
+  display: block;
   /* Hidden on touch devices via media query / JS usually, but here we just show on desktop */
 }
 
-@media (pointer: fine) {
+@media (max-width: 1024px) {
   .cursor {
     display: block;
+    /* Enable for mobile as well */
+    width: 15px;
+    /* Slightly smaller for mobile */
+    height: 15px;
   }
 }
+
 
 /* =========================================
    RESPONSIVE OVERRIDES (MOBILE & TABLET)
